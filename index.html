@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda de Criaturas Mágicas - Incubadora</title>
+    <style>
+        body { 
+            margin: 0; background: #0a1a0a url('https://i.ibb.co/LzfM6Yp/forest-magic.jpg') no-repeat center fixed;
+            background-size: cover; font-family: 'Georgia', serif; color: #fff;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,0,0.8); z-index: -1; }
+        
+        .main-box { width: 95%; max-width: 600px; background: rgba(13, 31, 13, 0.9); border: 2px solid #8eeb9b; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 0 20px rgba(142, 235, 155, 0.3); }
+        
+        input, select { 
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; 
+            border: 1px solid #8eeb9b; background: #000; color: #8eeb9b; font-size: 16px; box-sizing: border-box;
+        }
+
+        .btn-incubar { 
+            background: #2e7d32; color: white; border: none; padding: 15px 40px; 
+            border-radius: 10px; font-weight: bold; font-size: 20px; cursor: pointer; transition: 0.3s; 
+        }
+        .btn-incubar:hover { background: #4caf50; transform: scale(1.05); }
+
+        .historial-box { width: 95%; max-width: 600px; background: rgba(0,0,0,0.9); border: 2px solid #8eeb9b; border-radius: 12px; padding: 20px; margin-top: 30px; }
+        .entrada-criatura { 
+            position: relative; background: rgba(255,255,255,0.05); border-left: 4px solid #8eeb9b; 
+            padding: 15px; margin-bottom: 15px; border-radius: 8px; text-align: left;
+        }
+
+        .btn-copiar {
+            position: absolute; top: 10px; right: 10px; background: #8eeb9b; color: #000;
+            border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <h1 style="color:#8eeb9b; text-shadow: 2px 2px #000;">🐾 Tienda de Criaturas Mágicas 🐾</h1>
+    
+    <div class="main-box">
+        <h3 style="margin-top:0">🥚 Incubadora de Huevos</h3>
+        <input type="text" id="nombre-mago" placeholder="Nombre del Mago/Bruja...">
+        <select id="cantidad">
+            <option value="1">Abrir 1 Huevo 🥚</option>
+            <option value="2">Abrir 2 Huevos 🥚🥚</option>
+            <option value="3">Abrir 3 Huevos 🥚🥚🥚</option>
+        </select>
+        <button class="btn-incubar" onclick="abrirHuevos()">Incubar ✨</button>
+    </div>
+
+    <div id="historial-seccion" class="historial-box">
+        <h2 style="color:#8eeb9b; text-align:center; margin-top:0;">📜 Registro de Criaturas</h2>
+        <div id="log-content">Cargando nidos...</div>
+    </div>
+
+    <script>
+        // CAMBIA ESTA URL por tu nueva base de datos de Firebase
+        const DB_URL = "https://apertura-de-huevos-default-rtdb.firebaseio.com/criaturas.json";
+
+        const MASCOTAS = [
+            {n: "JAGUAR 🐆", h: "Te permite robar una habilidad de otra mascota por un día.", u: "1 uso al día.", a: "Tienda"},
+            {n: "PERRO 🐩", h: "Te da la posibilidad de obtener puntos dobles en una dinámica.", u: "1 uso al día, 5 rondas", a: "Dinámica"},
+            {n: "GATO 🐈‍⬛", h: "Ayuda al dueño a quedar en segundo lugar en dinámicas o minis.", u: "1 uso al día, 5 rondas.", a: "Actividad"},
+            {n: "LORO 🦜", h: "Imita a otro jugador en dinámica, copiando sus puntos.", u: "1 uso al día.", a: "Dinámica"},
+            {n: "ARDILLA 🐿️", h: "Bonificación de 50% en puntos de participación en dinámicas.", u: "1 uso al día.", a: "Dinámica"},
+            {n: "UNICORNIO 🦄", h: "Otorga puntos y galeones de actividades que no hayas participado.", u: "1 uso al día.", a: "Tienda"},
+            {n: "ELFO DOMÉSTICO 🧌", h: "Ayuda a obtener puntos y galeones en retos diarios aunque no los realices.", u: "1 uso al día.", a: "Grupo de Retos"},
+            {n: "LECHUZA 🦉", h: "Te acompaña en clases y duplica los puntos y galeones.", u: "1 uso al día.", a: "Clase"},
+            {n: "DEMIGUISE 🦥", h: "Puede hacer un reto flash por ti.", u: "2 usos al día.", a: "Reto Flash"},
+            {n: "MARIPOSA 🦋", h: "50% de aumento en puntos en Retos Flash.", u: "2 usos al día.", a: "Flash"},
+            {n: "RANA 🐸", h: "Roba puntos y galeones de alguien al azar en Clases/Dinámicas/Flash.", u: "1 uso al día.", a: "Tienda"},
+            {n: "NUTRIA 🦦", h: "25% más de participación en actividades de 3 Escobas.", u: "1 uso al día.", a: "Bar 3 Escobas"},
+            {n: "FLAMENCO 🦩", h: "20% de descuento en el Caldero Chorreante y F&B.", u: "1 uso al día.", a: "Tiendas"},
+            {n: "LOBO 🐺", h: "20% de descuento en el Caldero Chorreante y Tienda de Mascotas.", u: "1 uso al día.", a: "Tiendas"},
+            {n: "TORTUGA 🐢", h: "20% de descuento en el Cromo de las Ranas Chocolate.", u: "1 uso al día.", a: "Tienda de cromos"},
+            {n: "PATO 🦆", h: "Te otorga 1 cromo gratis al día.", u: "1 uso al día.", a: "Tienda de cromos"},
+            {n: "BOWTRUCKLE 🌱", h: "Aumenta el máximo de archivos en Galería o Red (+5).", u: "1 uso al día.", a: "Galería / Red"},
+            {n: "ABEJA 🐝", h: "5% más de puntos en Promoción y Galería Mágica.", u: "1 uso al día.", a: "Galería / Red"},
+            {n: "HADA 🧚🏻", h: "Te da 10 capturas de promoción diarias.", u: "1 uso al día.", a: "Red de Promoción"},
+            {n: "FÉNIX 🐦‍🔥", h: "Revivir en un duelo perdido y duplica galeones.", u: "2 usos al día.", a: "Duelo"},
+            {n: "ACROMÁNTULA 🕷️", h: "Resta una ronda al rival en duelo y duplica galeones.", u: "2 usos al día.", a: "Duelo"},
+            {n: "COLACUERNO HÚNGARO 🐲", h: "50% más de puntos en Quidditch por participación.", u: "1 uso por partido.", a: "Estadio"},
+            {n: "HOCICORTO SUECO 🐗", h: "Te da el doble de galeones en Quidditch.", u: "1 uso por partido.", a: "Estadio"},
+            {n: "DELFÍN 🐬", h: "Elige 5% extra en puntos o galeones en rol.", u: "1 uso por copa.", a: "Grupo de Rol"},
+            {n: "RATÓN 🐁", h: "Puede robar un producto de otra persona a elección.", u: "1 uso al día.", a: "Tienda"},
+            {n: "OSO PANDA 🐼", h: "Elige entre 2 cosas aleatorias (galeones, puntos, etc).", u: "1 uso al día.", a: "Tienda"},
+            {n: "CARACOL 🐌", h: "Recibe un artículo sorpresa después de una dinámica.", u: "1 uso al día.", a: "Tienda"},
+            {n: "CONEJO 🐰", h: "Ganas un producto al azar todos los días.", u: "1 uso al día.", a: "Tienda"},
+            {n: "ESCARBATO 🦔", h: "Busca y encuentra 2.000 galeones para el dueño.", u: "1 uso al día.", a: "Tienda"},
+            {n: "MURCIÉLAGO 🦇", h: "Roba 2.000 galeones a alguien al azar.", u: "1 uso al día.", a: "Tienda"},
+            {n: "OVEJA 🐑", h: "Puede robar 3 fichas a una persona en el casino.", u: "1 uso al día.", a: "Casino"}
+        ];
+
+        function cargarHistorial() {
+            fetch(DB_URL).then(res => res.json()).then(data => {
+                const log = document.getElementById('log-content');
+                if(!data) { log.innerHTML = "No hay criaturas nacidas aún."; return; }
+                let html = "";
+                Object.values(data).reverse().forEach(e => html += e);
+                log.innerHTML = html;
+            });
+        }
+
+        function abrirHuevos() {
+            const nombre = document.getElementById('nombre-mago').value || "Mago/Bruja";
+            const cant = document.getElementById('cantidad').value;
+            const tiempo = new Date().toLocaleDateString();
+            
+            let htmlEntrada = `<div class="entrada-criatura"><button class="btn-copiar" onclick="copiar(this)">Copiar 📋</button>`;
+            let textoCopiable = "";
+
+            for(let i=0; i<cant; i++) {
+                const m = MASCOTAS[Math.floor(Math.random() * MASCOTAS.length)];
+                
+                textoCopiable += `⋆ ——————✧◦🥚◦✧—————— ⋆\n\n      ✨ ᴍᴀꜱᴄᴏᴛᴀꜱ ✨\n\n   🎉¡Felicidades te tocó un @${nombre}!🎉\n\n➢${m.n}\n${m.h}\n\n→ Habilidad desbloqueada el ${tiempo}\n\n》${m.u.toUpperCase()}\n\n> Avisar de su uso en ${m.a}\n\n⋆ ——————✧◦🥚◦✧—————— ⋆\n\n`;
+                
+                htmlEntrada += `<div style="color:#8eeb9b; font-weight:bold; margin-top:10px;">🐣 Criatura ${i+1}: ${m.n}</div>
+                               <div style="font-size:13px; color:#ddd;">${m.h}</div>`;
+            }
+
+            htmlEntrada += `<textarea style="display:none">${textoCopiable}</textarea></div>`;
+
+            fetch(DB_URL, { method: 'POST', body: JSON.stringify(htmlEntrada) }).then(() => {
+                cargarHistorial();
+                document.getElementById('historial-seccion').scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        function copiar(btn) {
+            const txt = btn.parentElement.querySelector('textarea').value;
+            navigator.clipboard.writeText(txt).then(() => {
+                btn.innerText = "¡Copiado! ✅";
+                setTimeout(() => btn.innerText = "Copiar 📋", 2000);
+            });
+        }
+
+        window.onload = cargarHistorial;
+        setInterval(cargarHistorial, 5000);
+    </script>
+</body>
+</html>
