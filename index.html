@@ -12,7 +12,6 @@
         }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: -1; }
         
-        /* Contenedores */
         .main-box, .action-box { 
             width: 95%; max-width: 500px; background: rgba(20, 40, 20, 0.9); 
             border: 2px solid #8eeb9b; border-radius: 15px; padding: 25px; 
@@ -20,13 +19,13 @@
         }
 
         input, select { 
-            width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; 
-            border: 1px solid #8eeb9b; background: #000; color: #8eeb9b; font-size: 16px; box-sizing: border-box; text-align: center;
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; 
+            border: 1px solid #8eeb9b; background: #000; color: #8eeb9b; font-size: 15px; box-sizing: border-box; text-align: center;
         }
 
         .btn-magico { 
             background: #2e7d32; color: white; border: none; padding: 15px; 
-            border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; width: 100%;
+            border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px;
         }
         .btn-magico:hover { background: #4caf50; transform: scale(1.02); }
 
@@ -48,22 +47,29 @@
     
     <div class="main-box">
         <h3 style="margin:0; color: #8eeb9b;">🥚 Incubadora de Huevos</h3>
-        <p style="font-size: 13px; color: #bbb;">Para obtener una nueva mascota al azar</p>
         <input type="text" id="nombre-mago" placeholder="Tu nombre de Mago/Bruja...">
         <button class="btn-magico" onclick="abrirHuevos()">Incubar 1 Huevo ✨</button>
     </div>
 
     <div class="action-box">
         <h3 style="margin:0; color: #f9e29c;">✨ Habilidades Diarias</h3>
-        <p style="font-size: 13px; color: #bbb;">Si ya tienes una mascota, úsala aquí</p>
-        <input type="text" id="nombre-mago-accion" placeholder="Tu nombre...">
+        <input type="text" id="nombre-mascota-accion" placeholder="Nombre de la mascota (ej: Rigoberto)">
+        <input type="text" id="nombre-dueño-accion" placeholder="Nombre del dueño (ej: @Jere)">
+        
+        <select id="casa-dueño">
+            <option value="💚">Slytherin (Verde)</option>
+            <option value="❤️">Gryffindor (Rojo)</option>
+            <option value="💛">Hufflepuff (Amarillo)</option>
+            <option value="💙">Ravenclaw (Azul)</option>
+        </select>
+
         <select id="tipo-mascota">
-            <option value="">-- Selecciona tu mascota --</option>
             <option value="panda">Oso Panda 🐼 (Elegir Premio)</option>
             <option value="conejo">Conejo 🐰 (Producto al Azar)</option>
-            <option value="escarbato">Escarbato 🦔 (Encontrar Galeones)</option>
-            <option value="murcielago">Murciélago 🦇 (Robar Galeones)</option>
+            <option value="escarbato">Escarbato 🦔 (2.000 Galeones)</option>
+            <option value="murcielago">Murciélago 🦇 (Robar 2.000 Galeones)</option>
         </select>
+
         <button class="btn-magico" style="background: #a48a26;" onclick="usarHabilidad()">Usar Habilidad 🐾</button>
     </div>
 
@@ -101,7 +107,7 @@
             {n: "HOCICORTO SUECO 🐗", h: "Te da el doble de galeones en Quidditch.", u: "1 uso por partido.", a: "Estadio"},
             {n: "DELFÍN 🐬", h: "Elige 5% extra en puntos o galeones en rol.", u: "1 uso por copa.", a: "Grupo de Rol"},
             {n: "RATÓN 🐁", h: "Puede robar un producto de otra persona a elección.", u: "1 uso al día.", a: "Tienda"},
-            {n: "OSO PANDA 🐼", h: "Te da la posibilidad de elegir entre 2 cosas aleatorias.", u: "1 uso al día.", a: "Tienda"},
+            {n: "OSO PANDA 🐼", h: "Elección entre 2 cosas aleatorias.", u: "1 uso al día.", a: "Tienda"},
             {n: "CARACOL 🐌", h: "Recibe un artículo sorpresa después de participar en una dinámica.", u: "1 uso al día.", a: "Tienda"},
             {n: "CONEJO 🐰", h: "Ganas un producto al azar todos los días.", u: "1 uso al día.", a: "Tienda"},
             {n: "ESCARBATO 🦔", h: "Busca y encuentra 2.000 galeones para el dueño.", u: "1 uso al día.", a: "Tienda"},
@@ -109,47 +115,45 @@
             {n: "OVEJA 🐑", h: "Puede robar 3 fichas a una persona en el casino.", u: "1 uso al día.", a: "Casino"}
         ];
 
-        // LÓGICA DE INCUBADORA (Igual que la anterior)
         function abrirHuevos() {
             const nombre = document.getElementById('nombre-mago').value || "Mago/Bruja";
             const m = MASCOTAS[Math.floor(Math.random() * MASCOTAS.length)];
             const tiempo = new Date().toLocaleDateString();
-            
             let textoCopiable = `⋆ ——————✧◦🥚◦✧—————— ⋆\n\n      ✨ ᴍᴀꜱᴄᴏᴛᴀꜱ ✨\n\n   🎉¡Felicidades @${nombre}! te toco un 🎉\n\n➢${m.n}\n${m.h}\n\n→ Habilidad desbloqueada en el día 10\n\n》${m.u.toUpperCase()}\n\n> Avisar de su uso en ${m.a}\n\n⋆ ——————✧◦🥚◦✧—————— ⋆`;
-            
             enviarHistorial(nombre, `Ha incubado un huevo: <b>${m.n}</b>`, textoCopiable);
             document.getElementById('nombre-mago').value = "";
         }
 
-        // LÓGICA DE HABILIDADES (La nueva parte aleatoria)
         function usarHabilidad() {
-            const nombre = document.getElementById('nombre-mago-accion').value || "Mago/Bruja";
+            const mascotaNom = document.getElementById('nombre-mascota-accion').value || "Tu mascota";
+            const dueñoNom = document.getElementById('nombre-dueño-accion').value || "@Mago";
+            const casaEmoji = document.getElementById('casa-dueño').value;
             const tipo = document.getElementById('tipo-mascota').value;
-            if(!tipo) return alert("Selecciona una mascota");
-
+            
             let resultado = "";
-            let emoji = "";
+            let logTexto = "";
 
             if(tipo === "panda") {
-                const opciones = ["+7,000 P 💖", "+5,000 G 🪙", "+10,000 P 💖", "1 Artículo Sorpresa 🎁", "+4,000 G 🪙"];
+                const opciones = ["+7,000 P 💖", "+5,000 G 🪙", "+10,000 P 💖", "+8,000 P 💖", "+4,000 G 🪙", "1 Artículo Sorpresa 🎁"];
                 const p = opciones[Math.floor(Math.random() * opciones.length)];
-                resultado = `×🐼 Rigoberto te da [💜] ${p} @${nombre} 💙×`;
-                emoji = "🐼";
+                resultado = `×🐼 ${mascotaNom} te da [${casaEmoji}] ${p} ${dueñoNom} ${casaEmoji}×`;
+                logTexto = `Usó la habilidad de su Panda <b>${mascotaNom}</b>`;
             } else if(tipo === "conejo") {
-                const prods = ["Poción Amortentia", "Cerveza de Mantequilla", "Grageas", "Cromo Rana Chocolate"];
+                const prods = ["Poción Amortentia", "Cerveza de Mantequilla", "Grageas", "Cromo Rana Chocolate", "Pastillas Vomitivas"];
                 const pr = prods[Math.floor(Math.random() * prods.length)];
-                resultado = `×🐰 Tu Conejo te trae suerte: ¡Has ganado un/a ${pr}! @${nombre} ×`;
-                emoji = "🐰";
+                resultado = `×🐰 ${mascotaNom} te trae suerte: [${casaEmoji}] ¡Has ganado un/a ${pr}! ${dueñoNom} ${casaEmoji}×`;
+                logTexto = `Usó la habilidad de su Conejo <b>${mascotaNom}</b>`;
             } else if(tipo === "escarbato") {
-                resultado = `×🦔 ¡Tu Escarbato ha encontrado 2.000 G 🪙 para @${nombre}! ×`;
-                emoji = "🦔";
+                resultado = `×🦔 ¡${mascotaNom} ha encontrado 2.000 G 🪙 para ${dueñoNom} [${casaEmoji}]! ×`;
+                logTexto = `Usó la habilidad de su Escarbato <b>${mascotaNom}</b>`;
             } else if(tipo === "murcielago") {
-                resultado = `×🦇 ¡Tu Murciélago ha robado 2.000 G 🪙 de un alumno al azar para @${nombre}! ×`;
-                emoji = "🦇";
+                resultado = `×🦇 ¡${mascotaNom} ha robado 2.000 G 🪙 para ${dueñoNom} [${casaEmoji}]! ×`;
+                logTexto = `Usó la habilidad de su Murciélago <b>${mascotaNom}</b>`;
             }
 
-            enviarHistorial(nombre, `Usó la habilidad de su <b>${emoji}</b>`, resultado);
-            document.getElementById('nombre-mago-accion').value = "";
+            enviarHistorial(dueñoNom, logTexto, resultado);
+            document.getElementById('nombre-mascota-accion').value = "";
+            document.getElementById('nombre-dueño-accion').value = "";
         }
 
         function enviarHistorial(nombre, logTexto, copiaTexto) {
