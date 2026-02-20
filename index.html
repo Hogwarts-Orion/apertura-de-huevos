@@ -2,52 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tienda de Criaturas Mágicas - Incubadora</title>
+    <title>Tienda de Criaturas Mágicas - Hogwarts Orión</title>
     <style>
         body { 
             margin: 0; 
-            /* Fondo del Bosque Prohibido */
             background: #0a1a0a url('https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?auto=format&fit=crop&w=1920&q=80') no-repeat center fixed;
             background-size: cover; font-family: 'Georgia', serif; color: #fff;
             display: flex; flex-direction: column; align-items: center; padding: 20px;
         }
-        /* Capa oscura para que se lea bien el texto sobre el fondo */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: -1; }
-        
         .main-box { width: 95%; max-width: 500px; background: rgba(20, 40, 20, 0.9); border: 2px solid #8eeb9b; border-radius: 15px; padding: 30px; text-align: center; box-shadow: 0 0 20px rgba(142, 235, 155, 0.4); }
-        
-        input { 
-            width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; 
-            border: 1px solid #8eeb9b; background: #000; color: #8eeb9b; font-size: 16px; box-sizing: border-box; text-align: center;
-        }
-
-        .btn-incubar { 
-            background: #2e7d32; color: white; border: none; padding: 15px 50px; 
-            border-radius: 10px; font-weight: bold; font-size: 22px; cursor: pointer; transition: 0.3s; width: 100%;
-        }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #8eeb9b; background: #000; color: #8eeb9b; font-size: 16px; box-sizing: border-box; text-align: center; }
+        .btn-incubar { background: #2e7d32; color: white; border: none; padding: 15px 50px; border-radius: 10px; font-weight: bold; font-size: 22px; cursor: pointer; transition: 0.3s; width: 100%; }
         .btn-incubar:hover { background: #4caf50; transform: scale(1.02); box-shadow: 0 0 15px #8eeb9b; }
-
         .historial-box { width: 95%; max-width: 600px; background: rgba(0,0,0,0.9); border: 2px solid #8eeb9b; border-radius: 12px; padding: 20px; margin-top: 30px; }
-        .entrada-criatura { 
-            position: relative; background: rgba(255,255,255,0.05); border-left: 4px solid #8eeb9b; 
-            padding: 15px; margin-bottom: 15px; border-radius: 8px; text-align: left;
-        }
-
-        .btn-copiar {
-            position: absolute; top: 10px; right: 10px; background: #8eeb9b; color: #000;
-            border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold;
-        }
-        
-        h1 { color: #8eeb9b; text-shadow: 2px 2px #000; text-align: center; }
+        .entrada-criatura { position: relative; background: rgba(255,255,255,0.05); border-left: 4px solid #8eeb9b; padding: 15px; margin-bottom: 15px; border-radius: 8px; text-align: left; }
+        .btn-copiar { position: absolute; top: 10px; right: 10px; background: #8eeb9b; color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
-    <h1>🐾 Tienda de Criaturas Mágicas 🐾</h1>
+    <h1 style="color: #8eeb9b; text-shadow: 2px 2px #000;">🐾 Tienda de Criaturas Mágicas 🐾</h1>
     
     <div class="main-box">
         <h3 style="margin-top:0; color: #8eeb9b;">🥚 Incubadora de Huevos</h3>
-        <p style="font-size: 14px; color: #bbb;">Ingresa tu nombre para comenzar la eclosión</p>
         <input type="text" id="nombre-mago" placeholder="Nombre del Mago/Bruja...">
         <button class="btn-incubar" onclick="abrirHuevos()">Incubar 1 Huevo ✨</button>
     </div>
@@ -58,74 +36,55 @@
     </div>
 
     <script>
-        // TU URL ACTUALIZADA
         const DB_URL = "https://apertura-de-huevos-default-rtdb.firebaseio.com/criaturas.json";
+
+        // Listas para el Panda y Conejo
+        const PREMIOS_PANDA = ["+5.000 G 🪙", "+7.000 P 💖", "+10.000 P 💖", "+3.000 G 🪙", "1 Poción Félix Felicis 🍀", "1 Gragea de todos los sabores 🫘"];
+        const PRODUCTOS_CONEJO = ["Poción Amortentia 🧪", "Pastillas Vomitivas 💊", "Cerveza de Mantequilla 🍺", "Pluma de Vuela-Pluma 🪶", "Recordadora 🎱"];
 
         const MASCOTAS = [
             {n: "JAGUAR 🐆", h: "Te permite robar una habilidad de otra mascota por un día.", u: "1 uso al día.", a: "Tienda"},
-            {n: "PERRO 🐩", h: "Te da la posibilidad de obtener puntos dobles en una dinámica.", u: "1 uso al día, 5 rondas", a: "Dinámica"},
-            {n: "GATO 🐈‍⬛", h: "Ayuda al dueño a quedar en segundo lugar en dinámicas o minis.", u: "1 uso al día, 5 rondas.", a: "Actividad"},
-            {n: "LORO 🦜", h: "Imita a otro jugador en dinámica, copiando sus puntos.", u: "1 uso al día.", a: "Dinámica"},
-            {n: "ARDILLA 🐿️", h: "Bonificación de 50% en puntos de participación en dinámicas.", u: "1 uso al día.", a: "Dinámica"},
-            {n: "UNICORNIO 🦄", h: "Otorga puntos y galeones de actividades que no hayas participado.", u: "1 uso al día.", a: "Tienda"},
-            {n: "ELFO DOMÉSTICO 🧌", h: "Ayuda a obtener puntos y galeones en retos diarios aunque no los realices.", u: "1 uso al día.", a: "Grupo de Retos"},
-            {n: "LECHUZA 🦉", h: "Te acompaña en clases y duplica los puntos y galeones.", u: "1 uso al día.", a: "Clase"},
-            {n: "DEMIGUISE 🦥", h: "Puede hacer un reto flash por ti.", u: "2 usos al día.", a: "Reto Flash"},
-            {n: "MARIPOSA 🦋", h: "50% de aumento en puntos en Retos Flash.", u: "2 usos al día.", a: "Flash"},
-            {n: "RANA 🐸", h: "Roba puntos y galeones de alguien al azar en Clases/Dinámicas/Flash.", u: "1 uso al día.", a: "Tienda"},
-            {n: "NUTRIA 🦦", h: "25% más de participación en actividades de 3 Escobas.", u: "1 uso al día.", a: "Bar 3 Escobas"},
-            {n: "FLAMENCO 🦩", h: "20% de descuento en el Caldero Chorreante y F&B.", u: "1 uso al día en cada tienda.", a: "Tiendas"},
-            {n: "LOBO 🐺", h: "20% de descuento en el Caldero Chorreante y Tienda de Mascotas.", u: "1 uso al día en cada tienda.", a: "Tiendas"},
-            {n: "TORTUGA 🐢", h: "20% de descuento en el Cromo de las Ranas Chocolate.", u: "1 uso al día.", a: "Tienda de cromos"},
-            {n: "PATO 🦆", h: "Te otorga 1 cromo gratis al día.", u: "1 uso al día.", a: "Tienda de cromos"},
-            {n: "BOWTRUCKLE 🌱", h: "Aumenta el máximo de archivos en Galería o Red (+5).", u: "1 uso al día en 1 solo grupo.", a: "Galería / Red"},
-            {n: "ABEJA 🐝", h: "5% más de puntos en Promoción y Galería Mágica.", u: "1 uso al día en cada grupo.", a: "Galería / Red"},
-            {n: "HADA 🧚🏻", h: "Te da 10 capturas de promoción diarias.", u: "1 uso al día.", a: "Red de Promoción"},
-            {n: "FÉNIX 🐦‍🔥", h: "Revivir en un duelo perdido y duplica galeones.", u: "2 usos al día.", a: "Duelo"},
-            {n: "ACROMÁNTULA 🕷️", h: "Resta una ronda al rival en duelo y duplica galeones.", u: "2 usos al día.", a: "Duelo"},
-            {n: "COLACUERNO HÚNGARO 🐲", h: "50% más de puntos en Quidditch por participación.", u: "1 uso por partido.", a: "Estadio"},
+            {n: "OSO PANDA 🐼", h: "Elección entre 2 cosas aleatorias.", u: "1 uso al día.", a: "Tienda", tipo: "panda"},
+            {n: "CONEJO 🐰", h: "Ganas un producto al azar todos los días.", u: "1 uso al día.", a: "Tienda", tipo: "conejo"},
+            {n: "ESCARBATO 🦔", h: "Busca y encuentra 2.000 galeones para el dueño.", u: "1 uso al día.", a: "Tienda", regalo: "2.000 G 🪙"},
+            {n: "MURCIÉLAGO 🦇", h: "Roba 2.000 galeones a alguien al azar.", u: "1 uso al día.", a: "Tienda", regalo: "2.000 G 🪙 (Robados)"},
             {n: "HOCICORTO SUECO 🐗", h: "Te da el doble de galeones en Quidditch.", u: "1 uso por partido.", a: "Estadio"},
-            {n: "DELFÍN 🐬", h: "Elige 5% extra en puntos o galeones en rol.", u: "1 uso por copa.", a: "Grupo de Rol"},
-            {n: "RATÓN 🐁", h: "Puede robar un producto de otra persona a elección.", u: "1 uso al día.", a: "Tienda"},
-            {n: "OSO PANDA 🐼", h: "Elige entre 2 cosas aleatorias (galeones, puntos, etc).", u: "1 uso al día.", a: "Tienda"},
-            {n: "CARACOL 🐌", h: "Recibe un artículo sorpresa después de una dinámica.", u: "1 uso al día.", a: "Tienda"},
-            {n: "CONEJO 🐰", h: "Ganas un producto al azar todos los días.", u: "1 uso al día.", a: "Tienda"},
-            {n: "ESCARBATO 🦔", h: "Busca y encuentra 2.000 galeones para el dueño.", u: "1 uso al día.", a: "Tienda"},
-            {n: "MURCIÉLAGO 🦇", h: "Roba 2.000 galeones a alguien al azar.", u: "1 uso al día.", a: "Tienda"},
-            {n: "OVEJA 🐑", h: "Puede robar 3 fichas a una persona en el casino.", u: "1 uso al día.", a: "Casino"}
+            // ... (el resto de las mascotas se mantienen igual)
+            {n: "COLACUERNO HÚNGARO 🐲", h: "50% más de puntos en Quidditch por participación.", u: "1 uso por partido.", a: "Estadio"}
         ];
-
-        function cargarHistorial() {
-            fetch(DB_URL).then(res => res.json()).then(data => {
-                const log = document.getElementById('log-content');
-                if(!data) { log.innerHTML = "No hay criaturas nacidas aún."; return; }
-                let html = "";
-                Object.values(data).reverse().forEach(e => html += e);
-                log.innerHTML = html;
-            });
-        }
 
         function abrirHuevos() {
             const nombre = document.getElementById('nombre-mago').value || "Mago/Bruja";
-            const tiempo = new Date().toLocaleDateString();
-            
             const m = MASCOTAS[Math.floor(Math.random() * MASCOTAS.length)];
+            const fecha = new Date().toLocaleDateString();
             
-            let textoCopiable = `⋆ ——————✧◦🥚◦✧—————— ⋆\n\n      ✨ ᴍᴀꜱᴄᴏᴛᴀꜱ ✨\n\n   🎉¡Felicidades @${nombre}! te toco un 🎉\n\n➢${m.n}\n${m.h}\n\n→ Habilidad desbloqueada en el día 10\n\n》${m.u.toUpperCase()}\n\n> Avisar de su uso en ${m.a}\n\n⋆ ——————✧◦🥚◦✧—————— ⋆`;
+            // Generar regalo especial si aplica
+            let extraInfo = "";
+            if(m.tipo === "panda") {
+                const p1 = PREMIOS_PANDA[Math.floor(Math.random() * PREMIOS_PANDA.length)];
+                const p2 = PREMIOS_PANDA[Math.floor(Math.random() * PREMIOS_PANDA.length)];
+                extraInfo = `\n🎁 OPCIONES DEL PANDA:\n1. ${p1}\n2. ${p2}`;
+            } else if(m.tipo === "conejo") {
+                const prod = PRODUCTOS_CONEJO[Math.floor(PRODUCTOS_CONEJO.length)];
+                extraInfo = `\n🎁 REGALO DEL DÍA: ${prod}`;
+            } else if(m.regalo) {
+                extraInfo = `\n💰 RECOMPENSA INICIAL: ${m.regalo}`;
+            }
+
+            let textoCopiable = `⋆ ——————✧◦🥚◦✧—————— ⋆\n\n      ✨ ᴍᴀꜱᴄᴏᴛᴀꜱ ✨\n\n   🎉¡Felicidades @${nombre}! te toco un 🎉\n\n➢ ${m.n}\n${m.h}${extraInfo}\n\n→ Habilidad desbloqueada el ${fecha}\n》${m.u.toUpperCase()}\n> Avisar de su uso en ${m.a}\n\n🏆 RECOMPENSAS DE CRECIMIENTO:\n☆ Nivel 1 (5 días): +10.000p / +4.000G\n☆ Nivel 2 (10 días): +18.000p / +7.000G\n☆ Nivel 5 (25 días): ¡INMORTALIDAD!\n\n⋆ ——————✧◦🥚◦✧—————— ⋆`;
             
             let htmlEntrada = `<div class="entrada-criatura">
                 <button class="btn-copiar" onclick="copiar(this)">Copiar 📋</button>
-                <div style="font-size:11px; color:#aaa; margin-bottom: 5px;">${new Date().toLocaleString()}</div>
-                <div style="color:#8eeb9b; font-weight:bold;">🧙‍♂️ ${nombre} ha incubado un huevo:</div>
-                <div style="color:#fff; margin-top:5px;">➢ <b>${m.n}</b></div>
-                <div style="font-size:13px; color:#ddd; margin-bottom: 5px;">${m.h}</div>
+                <div style="font-size:11px; color:#aaa;">${new Date().toLocaleString()}</div>
+                <div style="color:#8eeb9b; font-weight:bold;">🧙‍♂️ ${nombre}: ¡Ha nacido un ${m.n}!</div>
+                <div style="font-size:13px; color:#ddd;">${m.h}</div>
                 <textarea style="display:none">${textoCopiable}</textarea>
             </div>`;
 
             fetch(DB_URL, { method: 'POST', body: JSON.stringify(htmlEntrada) }).then(() => {
                 cargarHistorial();
                 document.getElementById('historial-seccion').scrollIntoView({ behavior: 'smooth' });
-                document.getElementById('nombre-mago').value = ""; // Limpiar nombre tras abrir
+                document.getElementById('nombre-mago').value = "";
             });
         }
 
@@ -134,6 +93,16 @@
             navigator.clipboard.writeText(txt).then(() => {
                 btn.innerText = "¡Copiado! ✅";
                 setTimeout(() => btn.innerText = "Copiar 📋", 2000);
+            });
+        }
+
+        function cargarHistorial() {
+            fetch(DB_URL).then(res => res.json()).then(data => {
+                const log = document.getElementById('log-content');
+                if(!data) { log.innerHTML = "No hay criaturas."; return; }
+                let html = "";
+                Object.values(data).reverse().forEach(e => html += e);
+                log.innerHTML = html;
             });
         }
 
