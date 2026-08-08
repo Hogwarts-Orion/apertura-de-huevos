@@ -78,18 +78,23 @@
     <script>
         const DB_URL = "https://apertura-de-huevos-default-rtdb.firebaseio.com/criaturas.json";
 
+        // LISTA ACTUALIZADA SEGÚN EL CALDERO CHORREANTE
         const OBJETOS_TIENDA = [
-            "Saeta de fuego 🔥🧹", "Nimbus 2000 🪽🧹", "Anillo de Morfín Gaunt 💍", "Varita de saúco 🪄💀",
-            "El desiluminador 💡", "Pergamino mágico 📜", "El traslador 🔮", "Carta vociferadora 💌",
-            "Giratiempo ⏱", "Félix felicis 🍀🧪", "Pluma de Hermione 🪶", "Amortentia 💘🧪",
-            "Pastillas vomitivas 💊", "Ranita Amarilla 💛🍫", "Ranita verde 💚🍫", "Ranita roja ❤️🍫",
-            "Ranita negra 🖤🍫", "Ranita rosa 🩷🍫", "Ranita lila 💜🍫", "Ranita naranja 🧡🍫",
-            "Ranita celeste 🩵🍫", "Espejo de Oesed 🪞", "La recordadora de Neville 🎱", "Gragea de todos los sabores 🫘"
+            "Traslador 🔮", 
+            "Pergamino mágico 📜", 
+            "El giratiempo ⏱️", 
+            "La pluma de Hermione 🪶", 
+            "Llave voladora 🗝️🪽", 
+            "El Desiluminador de Ron 💡", 
+            "Ranita amarilla 💛🍫", 
+            "Ranita negra 🖤🍫", 
+            "Ranita lila 💜🍫", 
+            "Ranita naranja 🧡🍫", 
+            "Ranita blanca 🤍🍫"
         ];
 
-        const PREMIOS_GENERALES = [
-            "+7.000 P 💖", "+5.000 G 🪙", "+10.000 P 💖", "+8.000 P 💖", "+4.000 G 🪙", "+15.000 P 💖", "+6.000 G 🪙"
-        ];
+        // Se han eliminado los premios anteriores para dejar solo la lista nueva
+        const PREMIOS_GENERALES = []; 
 
         const MASCOTAS_LISTA = [
             {n: "JAGUAR 🐆", h: "Permite robar una habilidad de otra mascota por un día.", u: "1 uso al día.", a: "Tienda"},
@@ -141,7 +146,8 @@
             
             let resultado = "";
             let logTexto = "";
-            const listaCompleta = [...OBJETOS_TIENDA, ...PREMIOS_GENERALES];
+            // Ahora la lista solo contiene los objetos del Caldero Chorreante
+            const listaCompleta = [...OBJETOS_TIENDA];
 
             if(tipo === "panda") {
                 let p1 = listaCompleta[Math.floor(Math.random() * listaCompleta.length)];
